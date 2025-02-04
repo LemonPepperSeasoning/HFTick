@@ -1,28 +1,28 @@
-# scheduler
+# rscheduler
+
 python scheduling library implemented in rust
 
-
-
 ### Project setup
+
 ```
-python -m venv .env
-source .env/bin/activate
+python3 -m venv venv
+source venv/bin/activate
 pip install maturin
 maturin develop
 ```
 
-### Run 
+### Run
+
 ```
 maturin develop
-python3 
+python3
 
->> import scheduler
->> scheduler.schedule()
+>> import rscheduler
+>> rscheduler.schedule()
 ```
 
-
 ### Test
+
 ```
 cargo test
 ```
-

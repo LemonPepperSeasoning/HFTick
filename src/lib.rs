@@ -1,14 +1,30 @@
 use pyo3::prelude::*;
+use pyo3::types::PyFunction;
+use std::thread;
+use std::time::Duration;
 
-/// Formats the sum of two numbers as string.
+/// Runs a given Python function every `interval` seconds in a separate thread.
 #[pyfunction]
-fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
-    Ok((a + b).to_string())
+fn run_scheduler(py_func: PyObject, interval: f64) -> PyResult<()> {
+    thread::spawn(move || {
+        loop {
+            // Acquire GIL before calling the Python function
+            Python::with_gil(|py| {
+                if let Err(err) = py_func.call0(py) {
+                    eprintln!("Error calling Python function: {:?}", err);
+                }
+            });
+
+            thread::sleep(Duration::from_secs_f64(interval));
+        }
+    });
+
+    Ok(())
 }
 
-/// A Python module implemented in Rust.
+/// Create Python bindings
 #[pymodule]
-fn scheduler(_py: Python, m: &PyModule) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
+fn rscheduler(_py: Python, m: &PyModule) -> PyResult<()> {
+    m.add_function(wrap_pyfunction!(run_scheduler, m)?)?;
     Ok(())
 }
