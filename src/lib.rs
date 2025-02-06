@@ -32,7 +32,7 @@ fn run_scheduler(py_func: PyObject, interval: f64) -> PyResult<()> {
 
 /// Define Python module
 #[pymodule]
-fn rscheduler(_py: Python, m: &PyModule) -> PyResult<()> {
+fn rscheduler(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(run_scheduler, m)?)?;
     Ok(())
 }
