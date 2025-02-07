@@ -23,6 +23,7 @@ if __name__ == "__main__":
     scheduler.schedule(my_task, 1.0)
     scheduler.schedule(my_task2, 1.0)
 
+    scheduler.start()
     """
     scheduler = rscheduler.Scheduler()
     scheduler.schedule(my_task, 1.0)
