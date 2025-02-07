@@ -1,18 +1,13 @@
 use pyo3::prelude::*;
 
-#[pyclass(module = "rscheduler")]
+
 pub struct Subroutine {
-    py_func: PyObject,
+    pub py_func: PyObject,
 }
 
-#[pymethods]
 impl Subroutine {
-    #[new]
-    fn new(py_func: PyObject) -> Self {
-        Self { py_func }
-    }
 
-    fn run(&self, py: Python) -> PyResult<PyObject> {
+    pub fn run(&self, py: Python) -> PyResult<PyObject> {
         self.py_func.call0(py)
     }
 
@@ -20,6 +15,15 @@ impl Subroutine {
         0.0
     }
 }
+
+impl Clone for Subroutine {
+    fn clone(&self) -> Self {
+        Python::with_gil(|py| Subroutine {
+            py_func: self.py_func.clone_ref(py),
+        })
+    }
+}
+
 
 
 pub struct Configuration {
