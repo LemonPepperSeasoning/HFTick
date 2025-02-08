@@ -21,7 +21,11 @@ maturin develop
 python3
 
 >> import rscheduler
->> rscheduler.schedule()
+>> scheduler = rscheduler.Scheduler()
+>> id1 = scheduler.schedule(my_task, 1.0)
+>> scheduler.start()
+>> time.sleep(3)
+>> scheduler.cancel(id1)
 ```
 
 ### Test
@@ -33,3 +37,17 @@ cargo test
 ### TODO:
 
 - Go lower level & integrate with syscall (look at psutil for api example)
+
+### Contribution guideline
+
+...
+
+#### Release
+
+```
+Update Cargo.toml version
+Update CHANGELOG.md
+git commit -m "Release vX.Y.Z"
+git tag -a vX.Y.Z -m "Version X.Y.Z"
+git push origin vX.Y.Z
+```

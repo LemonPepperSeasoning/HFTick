@@ -1,6 +1,6 @@
 [package]
 name = "rscheduler"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["Takahiro Ishiguro"]
 description = "A high-precision task scheduler for Python, built with Rust for accuracy and efficiency"
