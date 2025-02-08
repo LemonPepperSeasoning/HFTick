@@ -21,7 +21,11 @@ maturin develop
 python3
 
 >> import rscheduler
->> rscheduler.schedule()
+>> scheduler = rscheduler.Scheduler()
+>> id1 = scheduler.schedule(my_task, 1.0)
+>> scheduler.start()
+>> time.sleep(3)
+>> scheduler.cancel(id1)
 ```
 
 ### Test
