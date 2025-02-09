@@ -26,6 +26,7 @@ python3
 >> scheduler.start()
 >> time.sleep(3)
 >> scheduler.cancel(id1)
+
 ```
 
 ### Test

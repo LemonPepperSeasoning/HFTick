@@ -1,8 +1,11 @@
 use pyo3::prelude::*;
+use std::collections::HashMap;
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    Arc,
+};
 use std::thread;
 use std::time::{Duration, Instant};
-use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
-use std::collections::HashMap;
 
 use crate::Subroutine;
 
@@ -11,7 +14,6 @@ pub struct Task {
     pub subroutine: Subroutine,
     pub interval: f64,
 }
-
 
 #[pyclass(module = "rscheduler")]
 pub struct Scheduler {
@@ -22,27 +24,25 @@ pub struct Scheduler {
 
 #[pymethods]
 impl Scheduler {
-
     #[new]
     fn new() -> Self {
         Self {
             subroutines: Vec::new(),
             switches: HashMap::new(),
-            counter: 0
+            counter: 0,
         }
     }
 
-    pub fn schedule(&mut self, py_func: PyObject, interval: f64) -> PyResult<(i8)> {
+    pub fn schedule(&mut self, py_func: PyObject, interval: f64) -> PyResult<i8> {
         self.counter += 1;
-        self.subroutines.push(
-            Task {
-                id: self.counter,
-                subroutine: Subroutine { py_func },
-                interval
-            }
-        );
-        self.switches.insert(self.counter, Arc::new(AtomicBool::new(true)));
-        Ok((self.counter))
+        self.subroutines.push(Task {
+            id: self.counter,
+            subroutine: Subroutine { py_func },
+            interval,
+        });
+        self.switches
+            .insert(self.counter, Arc::new(AtomicBool::new(true)));
+        Ok(self.counter)
     }
 
     pub fn start(&mut self) -> PyResult<()> {
@@ -71,22 +71,36 @@ impl Scheduler {
                 println!("Task id:{} stopped.", task_id);
             });
         }
-
         Ok(())
     }
 
-    pub fn cancel(&self, task_id: i8) -> PyResult<()> {
+    pub fn terminate(&mut self, task_id: i8) -> PyResult<()> {
         // cancel a subroutine
         if let Some(switch) = self.switches.get(&task_id) {
             switch.store(false, Ordering::Relaxed);
+            self.switches.remove(&task_id);
         } else {
-            return Err(pyo3::exceptions::PyValueError::new_err(format!("Task id:{} not found", task_id)));
+            return Err(pyo3::exceptions::PyValueError::new_err(format!(
+                "Task id:{} not found",
+                task_id
+            )));
         }
         Ok(())
     }
 
     pub fn list_schedules(&self) -> PyResult<()> {
         // list all scheduled subroutines
+        println!("On backlog");
+        for task in &self.subroutines {
+            println!("Task id:{} yet to be scheduled", task.id);
+        }
+
+        println!("Running");
+        for (task_id, switch) in &self.switches {
+            if switch.load(Ordering::Relaxed) {
+                println!("Task id:{} is running", task_id);
+            }
+        }
         Ok(())
     }
 
