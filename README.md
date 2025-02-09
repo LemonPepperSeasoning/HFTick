@@ -38,6 +38,8 @@ cargo test
 ### TODO:
 
 - Go lower level & integrate with syscall (look at psutil for api example)
+- Sphinx integration for Documentation
+- fix dependency. (should be `pyo3 = { version = "0.23.4", features = ["extension-module"] }` i think)
 
 ### Contribution guideline
 
