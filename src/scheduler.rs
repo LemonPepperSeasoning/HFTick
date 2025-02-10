@@ -75,7 +75,6 @@ impl Scheduler {
     }
 
     pub fn terminate(&mut self, task_id: i8) -> PyResult<()> {
-        // cancel a subroutine
         if let Some(switch) = self.switches.get(&task_id) {
             switch.store(false, Ordering::Relaxed);
             self.switches.remove(&task_id);
